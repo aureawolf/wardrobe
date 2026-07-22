@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurea · Wardrobe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1C2233;
+    --teal: #1A7A82;
+    --gold: #D8B266;
+    --coral: #E8724A;
+    --purple: #4A3070;
+    --warm-white: #F4EFE8;
+    --burgundy: #8B2635;
+    --rust: #C1440E;
+    --terracotta: #B5541A;
+    --camel: #C19A6B;
+    --deep-wine: #6B2737;
+    --warm-red: #C0392B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--warm-white);
+    font-family: 'Inter', sans-serif;
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(26,122,130,0.15) 0%, transparent 60%, rgba(210,178,102,0.1) 100%);
+    pointer-events: none;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--warm-white);
+    letter-spacing: 0.1em;
+    position: relative;
+  }
+  header h1 span {
+    color: var(--gold);
+    font-style: italic;
+  }
+  header p {
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244,239,232,0.5);
+    margin-top: 0.5rem;
+    position: relative;
+  }
+  .palette-strip {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 1.25rem;
+    position: relative;
+  }
+  .palette-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ── NAV FILTERS ── */
+  nav {
+    background: white;
+    border-bottom: 1px solid rgba(28,34,51,0.08);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(28,34,51,0.06);
+  }
+  .nav-group {
+    display: flex;
+    gap: 0;
+    align-items: center;
+  }
+  .nav-group + .nav-group {
+    margin-left: 1.5rem;
+    padding-left: 1.5rem;
+    border-left: 1px solid rgba(28,34,51,0.1);
+  }
+  nav button {
+    background: none;
+    border: none;
+    padding: 1rem 0.9rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(28,34,51,0.45);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  nav button:hover { color: var(--teal); }
+  nav button.active {
+    color: var(--teal);
+    border-bottom-color: var(--teal);
+  }
+  nav button.status-filter.active-owned { color: var(--teal); border-bottom-color: var(--teal); }
+  nav button.status-filter.active-ordered { color: var(--gold); border-bottom-color: var(--gold); }
+  nav button.status-filter.active-wanted { color: var(--coral); border-bottom-color: var(--coral); }
+  nav button.status-filter.active-consignment { color: rgba(28,34,51,0.3); border-bottom-color: rgba(28,34,51,0.3); }
+
+  /* ── MAIN ── */
+  main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 2.5rem 0 1.25rem;
+  }
+  .section-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--navy);
+    letter-spacing: 0.04em;
+  }
+  .section-header .count {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(28,34,51,0.35);
+  }
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--teal), transparent);
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+  }
+
+  /* ── GRID ── */
+  .wardrobe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  /* ── CARDS ── */
+  .item-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(28,34,51,0.07), 0 4px 16px rgba(28,34,51,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(28,34,51,0.12);
+  }
+  .item-card.hidden { display: none; }
+
+  /* status stripe */
+  .status-stripe {
+    height: 3px;
+    width: 100%;
+  }
+  .status-owned .status-stripe { background: var(--teal); }
+  .status-ordered .status-stripe { background: var(--gold); }
+  .status-wanted .status-stripe { background: var(--coral); }
+  .status-consignment .status-stripe { background: rgba(28,34,51,0.15); }
+  .status-nightmare .status-stripe { background: #c0392b; }
+
+  .card-image {
+    width: 100%;
+    height: 200px;
+    background: rgba(244,239,232,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-image .placeholder-emoji {
+    font-size: 3.5rem;
+    opacity: 0.25;
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+  }
+  .status-owned .status-badge { background: var(--teal); color: white; }
+  .status-ordered .status-badge { background: var(--gold); color: var(--navy); }
+  .status-wanted .status-badge { background: var(--coral); color: white; }
+  .status-consignment .status-badge { background: rgba(28,34,51,0.12); color: rgba(28,34,51,0.5); }
+  .status-nightmare .status-badge { background: #c0392b; color: white; }
+
+  .card-body { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .card-brand {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: 500;
+  }
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--navy);
+  }
+  .card-price {
+    font-size: 0.72rem;
+    color: rgba(28,34,51,0.4);
+    font-weight: 400;
+  }
+  .card-tip {
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: rgba(28,34,51,0.6);
+    border-left: 2px solid var(--gold);
+    padding-left: 0.6rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+  .card-warning {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: #c0392b;
+    background: rgba(192,57,43,0.06);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    margin-top: 0.25rem;
+  }
+  .card-note {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: rgba(28,34,51,0.5);
+    background: rgba(244,239,232,0.8);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    margin-top: 0.25rem;
+  }
+
+  /* color dots */
+  .color-dots {
+    display: flex;
+    gap: 4px;
+    margin-top: 0.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .color-dots-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(28,34,51,0.3);
+    margin-right: 2px;
+  }
+  .cdot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 0 0 1px rgba(28,34,51,0.08);
+    position: relative;
+  }
+  .cdot[title] { cursor: help; }
+
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.68rem;
+    color: var(--teal);
+    text-decoration: none;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: opacity 0.15s;
+  }
+  .card-link:hover { opacity: 0.7; }
+  .card-link svg { flex-shrink: 0; }
+
+  /* ── OUTFIT SECTION ── */
+  .outfits-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(28,34,51,0.08);
+  }
+  .outfits-section h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--navy);
+    margin-bottom: 0.4rem;
+  }
+  .outfits-section .subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(28,34,51,0.35);
+    margin-bottom: 1.75rem;
+  }
+
+  .outfit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .outfit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.4rem;
+    box-shadow: 0 1px 3px rgba(28,34,51,0.07), 0 4px 16px rgba(28,34,51,0.04);
+    border-left: 3px solid var(--teal);
+    transition: transform 0.2s;
+  }
+  .outfit-card:hover { transform: translateY(-1px); }
+  .outfit-card.occasion-evening { border-left-color: var(--purple); }
+  .outfit-card.occasion-dancing { border-left-color: var(--coral); }
+  .outfit-card.occasion-work { border-left-color: var(--navy); }
+  .outfit-card.occasion-casual { border-left-color: var(--teal); }
+  .outfit-card.occasion-events { border-left-color: var(--gold); }
+
+  .outfit-occasion {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .occasion-evening .outfit-occasion { color: var(--purple); }
+  .occasion-dancing .outfit-occasion { color: var(--coral); }
+  .occasion-work .outfit-occasion { color: var(--navy); }
+  .occasion-casual .outfit-occasion { color: var(--teal); }
+  .occasion-events .outfit-occasion { color: #9a7b1a; }
+
+  .outfit-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .outfit-pieces {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+  .outfit-piece {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: rgba(28,34,51,0.7);
+  }
+  .piece-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+  .piece-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(28,34,51,0.3);
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .outfit-stylist-note {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: rgba(28,34,51,0.5);
+    line-height: 1.6;
+    border-top: 1px solid rgba(28,34,51,0.06);
+    padding-top: 0.75rem;
+  }
+
+  .outfit-availability {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .avail-chip {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .avail-ready { background: rgba(26,122,130,0.1); color: var(--teal); }
+  .avail-incoming { background: rgba(216,178,102,0.15); color: #8a6a1a; }
+  .avail-needed { background: rgba(232,114,74,0.1); color: var(--coral); }
+
+  /* ── CAPSULE GAPS ── */
+  .gaps-section {
+    margin-top: 2.5rem;
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 2rem;
+    color: var(--warm-white);
+  }
+  .gaps-section h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--warm-white);
+    margin-bottom: 0.3rem;
+  }
+  .gaps-section .gaps-sub {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244,239,232,0.35);
+    margin-bottom: 1.5rem;
+  }
+  .gaps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .gap-item {
+    background: rgba(244,239,232,0.05);
+    border: 1px solid rgba(244,239,232,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .gap-priority {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+  }
+  .gap-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--warm-white);
+    margin-bottom: 0.4rem;
+    font-weight: 400;
+  }
+  .gap-search {
+    font-size: 0.67rem;
+    color: rgba(244,239,232,0.4);
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .gap-search strong {
+    color: rgba(244,239,232,0.65);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 0;
+    padding: 1rem 1.25rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(28,34,51,0.05);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.68rem;
+    color: rgba(28,34,51,0.55);
+    letter-spacing: 0.05em;
+  }
+  .legend-stripe {
+    width: 18px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 3rem;
+    color: rgba(28,34,51,0.3);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    main { padding: 1rem; }
+    .wardrobe-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    .outfit-grid { grid-template-columns: 1fr; }
+    .gaps-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Aurea · <span>Wardrobe</span></h1>
+  <p>Bohemian Femme · Make It Powerful · Soft Autumn / Warm Spring</p>
+  <div class="palette-strip">
+    <div class="palette-dot" style="background:#1A7A82" title="Warm Teal"></div>
+    <div class="palette-dot" style="background:#C0392B" title="Warm Red"></div>
+    <div class="palette-dot" style="background:#D8B266" title="Gold"></div>
+    <div class="palette-dot" style="background:#E8724A" title="Warm Coral"></div>
+    <div class="palette-dot" style="background:#4A3070" title="Deep Purple"></div>
+    <div class="palette-dot" style="background:#8B2635" title="Burgundy"></div>
+    <div class="palette-dot" style="background:#6B2737" title="Deep Wine"></div>
+    <div class="palette-dot" style="background:#C1440E" title="Rust"></div>
+    <div class="palette-dot" style="background:#B5541A" title="Terracotta"></div>
+    <div class="palette-dot" style="background:#C19A6B" title="Camel"></div>
+    <div class="palette-dot" style="background:#1C2233" title="Deep Navy"></div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-group">
+    <button class="cat-filter active" data-cat="all">All</button>
+    <button class="cat-filter" data-cat="dresses">Dresses</button>
+    <button class="cat-filter" data-cat="tops">Tops</button>
+    <button class="cat-filter" data-cat="bottoms">Bottoms</button>
+    <button class="cat-filter" data-cat="layers">Layers</button>
+    <button class="cat-filter" data-cat="shoes">Shoes</button>
+  </div>
+  <div class="nav-group">
+    <button class="status-filter" data-status="owned">✓ Own</button>
+    <button class="status-filter" data-status="ordered">↓ Ordered</button>
+    <button class="status-filter" data-status="wanted">★ Want</button>
+  </div>
+</nav>
+
+<main>
+  <div style="background:rgba(26,122,130,0.08);border:1px solid rgba(26,122,130,0.2);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.72rem;color:rgba(28,34,51,0.6);line-height:1.6">
+    <strong style="color:var(--teal)">📸 Adding photos:</strong> Upload item photos to your <a href="https://drive.google.com/drive/folders/1B2IKqwExcSLiRwrOhI_T3B3bjb4XtTsq" target="_blank" style="color:var(--teal)">Aurea Wardrobe Google Drive folder</a>, then share the link with Claude to update cards.
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-stripe" style="background:#1A7A82"></div> Owned</div>
+    <div class="legend-item"><div class="legend-stripe" style="background:#D8B266"></div> Ordered / Incoming</div>
+    <div class="legend-item"><div class="legend-stripe" style="background:#E8724A"></div> Want / Priority</div>
+    <div class="legend-item"><div class="legend-stripe" style="background:rgba(28,34,51,0.15)"></div> Consignment / Out</div>
+  </div>
+
+  <div class="section-header"><h2>Dresses</h2><span class="count">15 pieces</span></div>
+  <div class="section-divider"></div>
+  <div class="wardrobe-grid">
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Halara</div>
+        <div class="card-name">Majolica Blue Midi Chill Dress</div>
+        <div class='card-price'>$32.47 · Poshmark</div>
+        <div class='card-tip'>Your confirmed teal/aqua color. V-neck + midi length + movement = perfect for casual and dancing. Confirmed keeper.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned ★</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Warm Red Tropical Floral Spaghetti Strap</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Palette in one dress — warm red base, teal leaves, plum and coral florals. Sweetheart neckline. ★</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#4A3070" title="purple"></span><span class="cdot" style="background:#E8724A" title="coral"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned ★</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Teal/Mustard/Brown Ikat Smocked Midi</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Ikat watercolor print — teal + warm gold + espresso. Smocked waist, flutter cap sleeve. Very 'bohemian femme but make it powerful.' ★</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#B8860B" title="mustard"></span><span class="cdot" style="background:#3B2314" title="espresso"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Isabel · Thrift BOGO</div>
+        <div class="card-name">Burgundy/Ivory Floral Maxi</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Large-scale floral passes the print rule — ivory reads as pattern. Hi-low hem, tie shoulder. Romantic with an edge.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B2635" title="burgundy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1_DIHmjIaona4aHW91dCwX8bx8SPBQDiX&sz=w400" alt="Teal Coral Tropical Tie-Waist" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Teal/Coral Tropical Tie-Waist</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Teal dominant, warm coral florals, tie waist gives shape control. V-neck is flattering.</div>
+        
+        <div class='card-note'>Test in natural light near face — cream ground broken up by dense print but worth confirming.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#E8724A" title="coral"></span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1fcJ6nxAoNqm6FtGn90dZKuk74E87bunV&sz=w400" alt="Navy Teal Leaf Tiered Dress" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Navy/Teal Leaf Print Tiered Smocked</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Deep saturated navy + teal. Your eyes carry this. Tiered ruffle hem, smocked waist, button chest detail.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=15fQpIzM38HXZeky0djhcSQzpAo_1h-Qf&sz=w400" alt="Navy Medallion Halter Maxi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Navy/Black/White Medallion Maxi Halter</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Graphic medallion print, halter neckline is flattering.</div>
+        
+        <div class='card-note'>Weakest color piece — cool/graphic palette. Wear with gold jewelry and warm accessories.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1N40Rec4AFUaOv0zcRnRe74P94jzjGWqh&sz=w400" alt="Teal Orange Halter Maxi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned ★</span></div>
+      <div class="card-body">
+        <div class="card-brand">Thrift BOGO</div>
+        <div class="card-name">Teal/Orange Tropical Halter Maxi</div>
+        <div class='card-price'>Thrift</div>
+        <div class='card-tip'>Teal base — your single best color. Warm orange and rust accents, deep V halter. Going to look stunning. ★</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#C1440E" title="rust"></span><span class="cdot" style="background:#E8724A" title="coral"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=15z_Qo_nwoCotiCVLHyPcqobvJJ9K4-0T&sz=w400" alt="Old Navy Burgundy Wrap Midi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Old Navy</div>
+        <div class="card-name">Burgundy Wrap Midi — Flutter Sleeves & Tie Waist</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Confirmed silhouette, confirmed color. Flutter sleeves add movement. Tie waist is forgiving and flattering.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B2635" title="burgundy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1YnSFXkkZiY99DOINQjoVjyC_D7LF4Hwu&sz=w400" alt="Dusty Rose Cutout Dress" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Dusty Rose Suede Mid-Length Dress with Cutouts</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Interesting architectural cutout detail. Mid-length hits a good spot.</div>
+        
+        <div class='card-note'>Color is borderline — dusty rose leans muted. Test in natural light near face.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8a0a0" title="pink"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1ouklVSSf70L5S4zp8AT0TdqnQ0QzIRU1&sz=w400" alt="White Ruffle Slip" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">White Ruffle Slip Dress</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Versatile layer piece — can be worn alone or under an open cardigan or kimono.</div>
+        
+        <div class='card-note'>White near face rule applies — works best as a layer under something warm-colored.</div>
+        
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=178SJYtI4gTAb0H1IbPm1EorIhGW4dzBQ&sz=w400" alt="Rose Gold Sequin Dress" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Rose Gold Sequin Party Dress</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Statement party piece. The rose gold metallic reads warm rather than cool.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8a0a0" title="pink"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1mka9Gnid5kF3pdRNMdz_BkbxmDyOf0rK&sz=w400" alt="Blue Graphic Dress" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Blue Graphic Dress</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Bold graphic print with warm accents.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1-OPc3_IUidPmRKpoRGOnaRo9CLQUOUV0&sz=w400" alt="Navy Teal Paisley Maxi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy & Teal Paisley Maxi Dress</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Navy + teal paisley — deep saturated colors that work well together.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="dresses" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1q4MPUf6Dr6tzDUM5rBv3w8iL0s18fqfv&sz=w400" alt="Red Blue Teal Floral Maxi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Red, Blue & Teal Floral Maxi Dress</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Warm red with blue and teal florals — multiple palette colors in one piece.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-nightmare" data-cat="dresses" data-status="nightmare">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Do Not Order</span></div>
+      <div class="card-body">
+        <div class="card-brand">Halara · BLACKLISTED</div>
+        <div class="card-name">Red Bodycon (SoftlyZero)</div>
+        <div class='card-price'>$36.53 — return refused</div>
+        
+        <div class='card-warning'>⚠ Bunches at hips, poor fit. Return nightmare — demanded photo proof, still refused return. DO NOT ORDER FROM HALARA AGAIN. Dispute via credit card if needed.</div>
+        
+        
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:2.5rem"><h2>Tops</h2><span class="count">35 pieces</span></div>
+  <div class="section-divider"></div>
+  <div class="wardrobe-grid">
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1243Ix9blI1E7vMWE72BZR0vvaXl6aw-b&sz=w400" alt="Red Surplice Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Made by Johnny</div>
+        <div class="card-name">Dolman Surplice Tunic — Red</div>
+        <div class='card-price'>$19.75 · Amazon</div>
+        <div class='card-tip'>Warm red — your real-world validated color. Proven silhouette, works over leggings and jeans. Feels great.</div>
+        
+        <div class='card-note'>Monitor for fuzzy texture after washing — teal version showing this. Cheap fabric at price point.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1N3mdIi_70WKhrahyu5f6Pq3-PSuwzjWY&sz=w400" alt="Wine Surplice Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Made by Johnny</div>
+        <div class="card-name">Dolman Surplice Tunic — Wine</div>
+        <div class='card-price'>$19.75 · Amazon</div>
+        <div class='card-tip'>Deep wine/burgundy in your proven silhouette. Feels great.</div>
+        
+        <div class='card-note'>Monitor for fuzzy texture after washing.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#6B2737" title="wine"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1n3g_isZKV6__a1adsc5EKWq1ixdPDp_P&sz=w400" alt="Teal Surplice Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Made by Johnny</div>
+        <div class="card-name">Dolman Surplice Tunic — Teal</div>
+        <div class='card-price'>$19.75 · Amazon</div>
+        <div class='card-tip'>Your single best color in your proven silhouette.</div>
+        <div class='card-warning'>⚠ Developing fuzzy texture after a few washes — cheap fabric showing its limits. Good for now but shorter lifespan expected.</div>
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👚</span><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming</span></div>
+      <div class="card-body">
+        <div class="card-brand">Banana Republic</div>
+        <div class="card-name">Sleeveless Wrap Surplice — Burgundy Wine</div>
+        <div class='card-price'>$10 · Poshmark</div>
+        <div class='card-tip'>Viscose/lyocell blend — soft drape, sleeveless variety. Rich burgundy wine.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B2635" title="burgundy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👚</span><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming</span></div>
+      <div class="card-body">
+        <div class="card-brand">Lush</div>
+        <div class="card-name">Red & White Floral Wrap Top</div>
+        <div class='card-price'>$20 · Poshmark</div>
+        <div class='card-tip'>Warm red base, white florals read as pattern not ground — passes the print rule. Tie waist gives tummy control.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1cx2LhUuhL5IVXt-m4KbtTXDfYdq__59P&sz=w400" alt="Papermoon Teal Halter Cami" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming</span></div>
+      <div class="card-body">
+        <div class="card-brand">Papermoon</div>
+        <div class="card-name">Teal Halter Camisole — Coral & Yellow Floral</div>
+        <div class='card-price'>$12 · Poshmark</div>
+        <div class='card-tip'>Teal + coral + yellow hits multiple palette colors. Halter neckline is new for your wardrobe.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#E8724A" title="coral"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Bll_3InEJd3BJTm5xXtz_okAA9mpXMtZ&sz=w400" alt="Sonoma Rust Henley Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming</span></div>
+      <div class="card-body">
+        <div class="card-brand">Sonoma</div>
+        <div class="card-name">Sleeveless Henley Tank — Rust</div>
+        <div class='card-price'>$4 · Poshmark</div>
+        <div class='card-tip'>Rust confirmed color. Henley button placket adds interest. Casual everyday.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C1440E" title="rust"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1E292pkW988j2DxBxXLVP7YjUtTPT8Ess&sz=w400" alt="Anthropologie Terracotta Peplum" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming ★</span></div>
+      <div class="card-body">
+        <div class="card-brand">Anthropologie</div>
+        <div class="card-name">Terracotta Sleeveless Peplum Tunic</div>
+        <div class='card-price'>$14 · Poshmark</div>
+        <div class='card-tip'>Warm coral-terracotta, V-notch button placket, peplum hem flares away from body at waist — tummy friendly. ★</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#B5541A" title="terracotta"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-ordered" data-cat="tops" data-status="ordered">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1eLyuATzYmeySWBLBXsNJxEkSkDFf4V3S&sz=w400" alt="Les Serein Teal Floral Halter" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Incoming ★</span></div>
+      <div class="card-body">
+        <div class="card-brand">Les Serein</div>
+        <div class="card-name">Teal/Coral/Rust Large Floral Halter Tank</div>
+        <div class='card-price'>$23 NWT · Poshmark</div>
+        <div class='card-tip'>Deep teal base — best color. Bold large-scale coral + rust + mustard florals. High gathered halter neckline. NWT. This top IS the outfit. ★</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#E8724A" title="coral"></span><span class="cdot" style="background:#C1440E" title="rust"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1kn4ih_W008a_eD-5KWODZ5RBBHJMsGLM&sz=w400" alt="West of Melrose Burgundy Crop Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">West of Melrose / Tilly's</div>
+        <div class="card-name">Burgundy Ribbed Long Sleeve Wrap Crop Top</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Cropped wrap style — your best option for pairing with wide leg pants. Hits at the natural waist. Confirmed color.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B2635" title="burgundy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=11XPkD8p4zRm8_QE5PxKlznyozs_kDrvm&sz=w400" alt="Gold Velvet Faux Wrap Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Gold Velvet Faux Wrap Top</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Gold is your accent color and it's literally in your brand palette. Velvet adds texture and richness.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1pKDY-Yg1_EmAEPpZNlEmNGzaLKX2gMHe&sz=w400" alt="Maeve Red Surplice Blouse" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Maeve · Anthropologie</div>
+        <div class="card-name">Red Surplice Wrap Blouse — Long Sleeve</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Long sleeve surplice in warm red. Layering option for cooler evenings.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-consignment" data-cat="tops" data-status="consignment">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Fbzq_HZWRKV9UVJDwGxE7_o1voV5B-62&sz=w400" alt="Trina Turk Silk Surplice" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Consignment</span></div>
+      <div class="card-body">
+        <div class="card-brand">Trina Turk · Going Out</div>
+        <div class="card-name">Floral Faux Wrap Pure Silk Surplice Blouse</div>
+        <div class='card-price'>$51 · Poshmark — lesson learned</div>
+        
+        <div class='card-warning'>⚠ Fabric rough and stiff — pre-washed before sale degraded the silk. Feels restrictive, never worn. Heading to consignment. Lesson: pre-washed silk from resale can degrade significantly.</div>
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span><span class="cdot" style="background:#6B3A5E" title="plum"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1tqhx24-cDisx8fZD3Dc9OxDfXVDsZuu7&sz=w400" alt="Teal Flutter Sleeve V Neck" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Teal Flutter Sleeve V-Neck Top</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Teal in a flattering flutter sleeve. Your color, feminine silhouette.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1q7aUa2u775M4t1k0fYAFt9ZI7jMLk9kS&sz=w400" alt="Navy Tie Front Sleeveless" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Tie Front Button Down Sleeveless Top</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Navy tie-front with button details. Deep saturated navy works for you.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1FoxhpTZN7JyvVNCs9sjGnfb31_M37uyc&sz=w400" alt="Purple Paisley Halter Blouse" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Purple Paisley Halter Blouse</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Purple is confirmed in your palette. Halter neckline is flattering.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4A3070" title="purple"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1EpvnTr3BiW5UJK25cOODX6i0HsB-inhM&sz=w400" alt="Purple Sleeveless Print Blouse" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Purple Sleeveless Print Blouse</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4A3070" title="purple"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1nz7fq6gQLUWbiVm3MGdJLofPIWNo2RA1&sz=w400" alt="Purple Fitted Crop Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Purple Fitted Crop Tank</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4A3070" title="purple"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1h3j_CTtmo728H527DkblGNrgOfemv0VN&sz=w400" alt="Purple Long Sleeve Crop Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Purple Long Sleeve Crop Top</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4A3070" title="purple"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1uGkD8b6tfvx94mPhyr8W8ThbK6wHBsym&sz=w400" alt="Mustard Flutter Sleeve Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Mustard V-Neck Flutter Sleeve Tank</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Mustard/warm gold is a confirmed accent color.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#B8860B" title="mustard"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1ROnrgaPSyPMLPQrU_2oF52_iljpVAV07&sz=w400" alt="Large Print Navy Floral Strap Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Large Print Navy Gold White Red Floral Spaghetti Strap</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Bold large print hits multiple palette colors — navy, gold, red.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span><span class="cdot" style="background:#D8B266" title="gold"></span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=11akVJvCLn7yWEBl6spqNRbrKTJVnM3cz&sz=w400" alt="Small Print Floral Strap Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Small Print Floral Spaghetti Strap</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1gAcIgI4rGzxo4m_lwOE-UF1GNRXbKW7L&sz=w400" alt="Pink Flowy Crop Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Pink Flowy Crop Spaghetti Strap Top</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8a0a0" title="pink"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1pQhaIOEuRjvlYlKMp0kwrwmvxR4YgxCY&sz=w400" alt="Coral Silk Sleeveless" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Coral Silk Sleeveless</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Coral is a confirmed on-camera color. Silk drape is elegant.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8724A" title="coral"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=15lFHedWRmE9HU22bRxJtswSDTQ95zQsQ&sz=w400" alt="Chambray Tie Front Top" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Chambray Crop Tie Front Top</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Denim-adjacent tie front. More casual and playful.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=16DnSCJmNnuVJkf9we9xPg3sC0lmMGfd3&sz=w400" alt="Pink Fitted Crop Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Pink Fitted Crop Tank</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8a0a0" title="pink"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1gy6exxEaNQi0UZW06XfffYaub3hfmlRg&sz=w400" alt="Red Racerback Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Red Racerback Tank</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Warm red in a casual sporty silhouette.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=18RU-ZtBd-FUxB8k4yVLuH6tViZ3oYhKS&sz=w400" alt="Navy Fitted Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Fitted Tank</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Deep navy basic layer.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1sV0XLe1CsVqZxxHWfkYH2dcx_7uXZcGs&sz=w400" alt="Salmon Fitted Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Salmon Fitted Tank</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#e89070" title="salmon"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1yQ-_PjFfRE0hrnHfDBL9vFlcOLYXwH9o&sz=w400" alt="Rust Fitted Tank" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Rust Fitted Tank</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Rust confirmed color. Versatile layer.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C1440E" title="rust"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=13fQe-anJyTEU-Dy3M5swhO-sn3mF6jMr&sz=w400" alt="Blue Gray Cowl Satin Cami" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Blue Gray Cowl Satin Cami</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Satin cowl neck — elegant drape. Deep slate blue.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1u3wODxhWYN5WIS815igYWr4dN3qnzmjI&sz=w400" alt="Burgundy Long Sleeve Lace" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Burgundy Long Sleeve with Lace Accents</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Burgundy confirmed. Lace accent adds texture.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B2635" title="burgundy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1EmTQqZ3G2P7j0ldSxS3BTReF164Qowip&sz=w400" alt="Teal Turtle T-Shirt" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Teal Turtle T-Shirt</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Your best color in a casual burnout tee.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="tops" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1yAYpEA4aTIEkmfRa1pN68d8QTfoumlm0&sz=w400" alt="Pink Hawaii T-Shirt" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👚</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Pink Hawaii T-Shirt</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#E8a0a0" title="pink"></span></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:2.5rem"><h2>Bottoms</h2><span class="count">12 pieces</span></div>
+  <div class="section-divider"></div>
+  <div class="wardrobe-grid">
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1isW6mbTff5iXSJANkIwAe2ASa51y0qUG&sz=w400" alt="Med Wash Flare Jeans" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Wardrobe</div>
+        <div class="card-name">Med Wash Flare Jeans</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Confirmed flattering silhouette.</div>
+        
+        <div class='card-note'>Gap: no dark wash. Dark wash flares would dramatically expand outfit options for polished/evening looks.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1vcAOUXYbMYe6Yivdnm2CBCJRMwMeS-26&sz=w400" alt="Denim Cutoffs" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">✂️</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Wardrobe</div>
+        <div class="card-name">Denim Cutoffs — Med Wash</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Hot NorCal days essential.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Qa3GvenvJGlbQvXwv465M5hY1tAf8nxH&sz=w400" alt="Light Wash Wide Leg Crop" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Wardrobe</div>
+        <div class="card-name">Light Wash Wide Leg Crop Jeans</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Volume on both top and bottom creates a silhouette challenge.</div>
+        
+        <div class='card-note'>Currently unworn — pair with West of Melrose crop top or another fitted/cropped top that hits at the natural waist.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1M0MHF_oowSZoTWC51eqJJ_xBpRc1ry3Q&sz=w400" alt="Navy Palazzo Pants" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Palazzo Pants</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        <div class='card-note'>Same styling challenge as wide leg — need a fitted or cropped top that ends at the natural waist.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1NiuSb6Ww--imrJIGbeo72UztGQxIT8ig&sz=w400" alt="Red Palazzo Pants" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Red Palazzo Pants</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Warm red in a flowy silhouette.</div>
+        
+        <div class='card-note'>Pair with a fitted or cropped top. The color is great.</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C0392B" title="red"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1jqp4coWhrhET-dZ11_QUGn6eMgR_Xexw&sz=w400" alt="Navy Joggers" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Joggers</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Casual comfort. Navy is a good anchor neutral for you.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1O58UQVdUP07wfIcccZ6Hc44CEu-IJW-U&sz=w400" alt="Charcoal Fleece Leggings" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Charcoal Fleece Leggings</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#546270" title="charcoal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1OEEWCCMs25yZfo9rLQ9XxOlUAMyJw99v&sz=w400" alt="Chocolate Leggings" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Chocolate Leggings</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#5C3D2E" title="chocolate"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1MuHYnZamduaCupFNaErfmWRIM8e8G6sJ&sz=w400" alt="Navy Leggings" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Leggings</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1U5HKw0mQiZlE2qIewEDK6elGMk0uEdWp&sz=w400" alt="Plum Leggings" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Plum Leggings</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Plum/deep purple is confirmed in your palette.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#6B3A5E" title="plum"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👗</span><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Wardrobe</div>
+        <div class="card-name">Teal Midi Skirt</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Your single best color as a bottom. Pairs beautifully with surplice tops and camis.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="bottoms" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Tmt686TufFjoPUL_xw0eVMqm86X9xIpq&sz=w400" alt="Blue Pink Floral Maxi Skirt" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👗</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Blue & Pink Floral Maxi Skirt</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Floral maxi skirt — bohemian movement.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#4a6fa5" title="blue"></span><span class="cdot" style="background:#E8a0a0" title="pink"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="bottoms" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👖</span><span class="placeholder-emoji" style="display:none">👖</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap</div>
+        <div class="card-name">Dark Wash Flare or Straight Jeans</div>
+        <div class='card-price'>Search Poshmark · Size 28/29</div>
+        <div class='card-tip'>Foundation piece — nothing works as well for polished/evening looks without this.</div>
+        
+        <div class='card-note'>Search: "dark wash flare jeans size 28" · "dark indigo flare jeans M" · "AG dark wash flare 28"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=dark+wash+flare+jeans+size+28%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:2.5rem"><h2>Layers</h2><span class="count">6 owned · 3 wanted</span></div>
+  <div class="section-divider"></div>
+  <div class="wardrobe-grid">
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1FyKBrGXQIzgaotQkdUToE7DAULVxRwQb&sz=w400" alt="Mustard V Neck Sweater" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Mustard V-Neck Sweater</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Warm mustard gold — close to your brand gold accent color.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#B8860B" title="mustard"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=11VlH7yqSr3EgNHFyrMJha9RZ9Qcwhz6u&sz=w400" alt="Rust Cardigan" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Rust Open Loose Weave Cardigan</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Rust is confirmed. Open loose weave adds texture.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C1440E" title="rust"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1fVE51JGyxcR29ERFNJcS6LSd0Ludn4PH&sz=w400" alt="Navy Cardigan" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Navy Open Loose Weave Cardigan</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Deep navy, open weave, versatile layer.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1LQucqZavaApVQI4nvCypntgRBwq3CjD4&sz=w400" alt="Pullover Waffle Sweater" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Pullover Waffle Sweater</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Rn75uOnx482HUPjpN1QA2ZeYJmWtWP0m&sz=w400" alt="Brown Gold Cardigan Duster" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Brown & Gold Loose Weave Cardigan Duster</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Long cardigan duster in warm brown and gold tones — closest thing you have to the camel/gold layer you need.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#7B4F2E" title="brown"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="layers" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1TW5CWvypeiUmppOoXVd3ybOgIEaQyDUV&sz=w400" alt="Charcoal Open Cardigan" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Charcoal Open Cardigan</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#546270" title="charcoal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="layers" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">🥻</span><span class="placeholder-emoji" style="display:none">🥻</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap</div>
+        <div class="card-name">Kimono Duster — Teal, Burgundy, or Warm Gold</div>
+        <div class='card-price'>Search Poshmark · M/OS</div>
+        <div class='card-tip'>Signature boho-femme layer. Previous one donated — wrong colors. Need right palette.</div>
+        
+        <div class='card-note'>Search: "kimono duster teal M" · "maxi kimono burgundy OS" · "boho kimono duster rust teal OS" · "Free People kimono duster M"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1A7A82" title="teal"></span><span class="cdot" style="background:#8B2635" title="burgundy"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=kimono+duster+teal%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="layers" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">🧶</span><span class="placeholder-emoji" style="display:none">🧶</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap</div>
+        <div class="card-name">Camel or Warm Gold Open-Knit Cardigan</div>
+        <div class='card-price'>Search Poshmark · M</div>
+        <div class='card-tip'>Your 'white cardigan equivalent' — neutral enough for everything, warm enough to stay in palette.</div>
+        
+        <div class='card-note'>Search: "open knit cardigan camel M" · "chunky knit cardigan warm gold M" · "camel duster cardigan M"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C19A6B" title="camel"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=open+knit+cardigan+camel%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="layers" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">🧥</span><span class="placeholder-emoji" style="display:none">🧥</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap</div>
+        <div class="card-name">Dark Denim or Espresso Structured Jacket</div>
+        <div class='card-price'>Search Poshmark · M</div>
+        <div class='card-tip'>For events, mixers, and Ohana gatherings where the kimono feels too casual.</div>
+        
+        <div class='card-note'>Search: "dark denim jacket fitted M" · "moto jacket espresso brown M" · "espresso brown boho jacket M"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#1C2233" title="navy"></span><span class="cdot" style="background:#3B2314" title="espresso"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=dark+denim+jacket+fitted%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:2.5rem"><h2>Shoes</h2><span class="count">11 owned · 3 wanted · Size 7</span></div>
+  <div class="section-divider"></div>
+  <div class="wardrobe-grid">
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1WDY8mJIAamDnm-rwjjIvHE4FbVUaGtMP&sz=w400" alt="Tan Platform Cork Sandals" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Tan Platform Cork Sandals</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C19A6B" title="tan"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1oN3Ipe-2wArkPvJerVMxj0eCa8wYRao9&sz=w400" alt="Sweater Boots" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👢</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Sweater Boots</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#546270" title="charcoal"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1M0wN13P29CTdtyGAS1DCOdTUaGQV_ZIT&sz=w400" alt="Brown Suede Cork Sandals" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Brown Suede Cork Platform Sandals</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#7B4F2E" title="brown"></span><span class="cdot" style="background:#C19A6B" title="tan"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1twligvs74OQ9UMJtkOo2OrbQAWvPfm7l&sz=w400" alt="Gold Flip Flops" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Gold Flip Flops</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Gold — bridges your entire palette.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1Ndc1VEtB7PP9RWDNZEyZrD7xUUO-mQyz&sz=w400" alt="Tan Suede Fringe Sandals" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Tan Suede Fringe Sandals</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Boho fringe detail, warm tan. Great for summer events.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C19A6B" title="tan"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=11r9b6nSx0yj1NY6IPWZU-_JHvrEl2Aba&sz=w400" alt="Cognac Knee High Boots" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👢</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Freebird</div>
+        <div class="card-name">Cognac Knee High Lace-Up Boots</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Statement boot. Cognac/warm brown reads as a confirmed anchor color.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B4513" title="cognac"></span><span class="cdot" style="background:#7B4F2E" title="brown"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1woO-1AN-4GRU02kZiQk1HPCUfSzNtBgl&sz=w400" alt="Tan Gold Sandals" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Tan & Gold Sandals</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C19A6B" title="tan"></span><span class="cdot" style="background:#D8B266" title="gold"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=11t6E0ATV3wMu3u8ONW62BEez2qA8-ZLE&sz=w400" alt="Brown Military Boots" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👢</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Brown Lace-Up Military Style Boots</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Edgy grounding boot that adds the 'with an edge' to bohemian femme.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#7B4F2E" title="brown"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1ZIWNf5U2fpHo8zOgBqKInkX9S35BpVAD&sz=w400" alt="Ivory Sneakers" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👟</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Ivory Sneakers</div>
+        <div class='card-price'>Owned</div>
+        
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#F4EFE8" title="ivory"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=1dPdZoS1rmkUAqOSGLrpVWWl9hrP0i8JP&sz=w400" alt="Camel Suede Booties" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👢</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Cladwell</div>
+        <div class="card-name">Camel Suede Booties</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Camel is your confirmed neutral. Low heel bootie is very wearable.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#C19A6B" title="camel"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-owned" data-cat="shoes" data-status="owned">
+      <div class="status-stripe"></div>
+      <div class="card-image"><img src="https://drive.google.com/thumbnail?id=14MSbv6hza_9HmTFdN9SmWw-dSYFGVsmH&sz=w400" alt="Reef Cognac Flip Flops" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Owned</span></div>
+      <div class="card-body">
+        <div class="card-brand">Reef</div>
+        <div class="card-name">Cognac Scallop Leather Flip Flops</div>
+        <div class='card-price'>Owned</div>
+        <div class='card-tip'>Quality leather flip flop in a warm cognac.</div>
+        
+        
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#8B4513" title="cognac"></span></div>
+        
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="shoes" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👡</span><span class="placeholder-emoji" style="display:none">👡</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap · Size 7</div>
+        <div class="card-name">Gold or Tan Strappy Sandals</div>
+        <div class='card-price'>~$15-40 Poshmark</div>
+        <div class='card-tip'>Gold bridges your entire palette — warms up even the navy/black medallion dress.</div>
+        
+        <div class='card-note'>Search: "gold strappy sandals 7" · "Sam Edelman gold sandal 7" · "Steve Madden tan strappy sandal 7"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#D8B266" title="gold"></span><span class="cdot" style="background:#C19A6B" title="tan"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=gold+strappy+sandals+7%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="shoes" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">👢</span><span class="placeholder-emoji" style="display:none">👢</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Priority Gap · Size 7</div>
+        <div class="card-name">Heeled Ankle Boots — Espresso/Cognac</div>
+        <div class='card-price'>~$25-60 Poshmark</div>
+        <div class='card-tip'>Transitions dresses and jeans into fall/evening. Frye or Bed Stu under $40 worth grabbing.</div>
+        
+        <div class='card-note'>Search: "heeled ankle boot espresso 7" · "Dolce Vita bootie caramel 7" · "Franco Sarto ankle boot brown 7" · "Frye cognac boot 7"</div>
+        <div class="color-dots"><span class="color-dots-label">Colors</span><span class="cdot" style="background:#3B2314" title="espresso"></span><span class="cdot" style="background:#8B4513" title="cognac"></span></div>
+        <a class="card-link" href="https://poshmark.com/search?query=heeled+ankle+boot+espresso+brown+7%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+    <div class="item-card status-wanted" data-cat="shoes" data-status="wanted">
+      <div class="status-stripe"></div>
+      <div class="card-image"><span class="placeholder-emoji">💃</span><span class="placeholder-emoji" style="display:none">💃</span><span class="status-badge">Priority</span></div>
+      <div class="card-body">
+        <div class="card-brand">Dance · Size 7</div>
+        <div class="card-name">Salsa/Street Hybrid Dance Shoe</div>
+        <div class='card-price'>~$40-80 · Dance supply or Poshmark</div>
+        <div class='card-tip'>Suede sole (essential for spinning) + 1.5–2.5" heel + street-wearable upper. Best brands: Capezio, Very Fine, Bloch.</div>
+        
+        <div class='card-note'>Search: "Capezio street salsa shoe 7" · "Very Fine dance sneaker 7" · "suede sole dance shoe 7". Check brand size charts before buying resale.</div>
+        
+        <a class="card-link" href="https://poshmark.com/search?query=Capezio+street+salsa+shoe+7%26size%5B%5D%3DM" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Search Poshmark</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTFITS -->
+  <div class="outfits-section">
+    <h2>Outfit Formulas</h2>
+    <p class="subtitle">Stylist mix-and-match · Based on what you own + what's incoming</p>
+    <div class="outfit-grid">
+
+      <div class="outfit-card occasion-dancing">
+        <div class="outfit-occasion">Salsa Night</div>
+        <div class="outfit-name">Teal Power Move</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Dress</span><span class="piece-dot"></span>Teal/Orange Tropical Halter Maxi</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Gold strappy sandals or dance heels</div>
+          <div class="outfit-piece"><span class="piece-label">Jewelry</span><span class="piece-dot"></span>Gold hoops or statement earrings</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-ready">Dress: owned</span><span class="avail-chip avail-needed">Sandals: needed</span></div>
+        <div class="outfit-stylist-note">Your teal halter maxi is the outfit. Don't compete with it. Gold accessories only. You'll stop traffic on the dance floor.</div>
+      </div>
+
+      <div class="outfit-card occasion-casual">
+        <div class="outfit-occasion">NorCal Summer Day</div>
+        <div class="outfit-name">Laid-Back Femme</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Top</span><span class="piece-dot"></span>Sonoma Rust Henley Tank (incoming)</div>
+          <div class="outfit-piece"><span class="piece-label">Bottom</span><span class="piece-dot"></span>Med wash flare jeans or denim cutoffs</div>
+          <div class="outfit-piece"><span class="piece-label">Layer</span><span class="piece-dot"></span>Rust or brown gold cardigan duster</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Tan sandals or cognac booties</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-incoming">Top: incoming</span><span class="avail-chip avail-ready">Everything else: owned</span></div>
+        <div class="outfit-stylist-note">Rust + brown gold is warm tonal dressing — looks intentional without effort. Denim cutoffs = casual; flares = elevated casual.</div>
+      </div>
+
+      <div class="outfit-card occasion-events">
+        <div class="outfit-occasion">Ohana Connect Mixer</div>
+        <div class="outfit-name">Bohemian Authority</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Top</span><span class="piece-dot"></span>Les Serein Teal/Coral Halter Tank (incoming)</div>
+          <div class="outfit-piece"><span class="piece-label">Bottom</span><span class="piece-dot"></span>Teal midi skirt</div>
+          <div class="outfit-piece"><span class="piece-label">Layer</span><span class="piece-dot"></span>Camel knit cardigan (when acquired)</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Espresso heeled boots or gold sandals</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-incoming">Top: incoming</span><span class="avail-chip avail-ready">Skirt: owned</span><span class="avail-chip avail-needed">Cardigan: needed</span></div>
+        <div class="outfit-stylist-note">Teal on teal is a power move when pieces have different textures and silhouettes. The halter tank + midi skirt reads collected, not matchy. Camel breaks it perfectly.</div>
+      </div>
+
+      <div class="outfit-card occasion-work">
+        <div class="outfit-occasion">Coaching Call / On Camera</div>
+        <div class="outfit-name">On-Brand, On-Camera</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Dress</span><span class="piece-dot"></span>Teal/Mustard/Brown Ikat Smocked Midi</div>
+          <div class="outfit-piece"><span class="piece-label">Layer</span><span class="piece-dot"></span>Kimono duster in gold or burgundy (when acquired)</div>
+          <div class="outfit-piece"><span class="piece-label">Jewelry</span><span class="piece-dot"></span>Gold statement earrings</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-ready">Dress: owned</span><span class="avail-chip avail-needed">Kimono: needed</span></div>
+        <div class="outfit-stylist-note">That ikat dress is literally your brand palette — teal, gold, espresso. You walk into a coaching call visually aligned with your brand. The kimono adds the authority layer.</div>
+      </div>
+
+      <div class="outfit-card occasion-evening">
+        <div class="outfit-occasion">Winery Evening / Date Night</div>
+        <div class="outfit-name">Romantic with an Edge</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Top</span><span class="piece-dot"></span>Banana Republic Burgundy Sleeveless Surplice (incoming)</div>
+          <div class="outfit-piece"><span class="piece-label">Bottom</span><span class="piece-dot"></span>Dark wash flare jeans (when acquired)</div>
+          <div class="outfit-piece"><span class="piece-label">Layer</span><span class="piece-dot"></span>Kimono duster in warm gold or teal</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Espresso heeled boots</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-incoming">Top: incoming</span><span class="avail-chip avail-needed">Jeans: needed</span><span class="avail-chip avail-needed">Kimono: needed</span></div>
+        <div class="outfit-stylist-note">Burgundy + dark denim + gold kimono is elevated and effortless. The heeled boots ground it. This is the outfit that makes people ask who you're wearing.</div>
+      </div>
+
+      <div class="outfit-card occasion-casual">
+        <div class="outfit-occasion">Hot Summer Day</div>
+        <div class="outfit-name">Red Dress, No Notes</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Dress</span><span class="piece-dot"></span>Warm Red Tropical Floral Spaghetti Strap</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Gold strappy sandals</div>
+          <div class="outfit-piece"><span class="piece-label">Bag</span><span class="piece-dot"></span>Woven or rattan in natural tones</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-ready">Dress: owned</span><span class="avail-chip avail-needed">Sandals: needed</span></div>
+        <div class="outfit-stylist-note">Warm red + gold is the combination that has literally stopped strangers on the street. The dress does everything — you need nothing else.</div>
+      </div>
+
+      <div class="outfit-card occasion-events">
+        <div class="outfit-occasion">Community Event / Speaking</div>
+        <div class="outfit-name">Quiet Power</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Top</span><span class="piece-dot"></span>Anthropologie Terracotta Peplum (incoming)</div>
+          <div class="outfit-piece"><span class="piece-label">Bottom</span><span class="piece-dot"></span>Dark wash flare jeans (when acquired)</div>
+          <div class="outfit-piece"><span class="piece-label">Layer</span><span class="piece-dot"></span>Espresso structured jacket (when acquired)</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Camel suede booties (owned)</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-incoming">Top: incoming</span><span class="avail-chip avail-needed">Jeans: needed</span><span class="avail-chip avail-needed">Jacket: needed</span><span class="avail-chip avail-ready">Booties: owned</span></div>
+        <div class="outfit-stylist-note">Terracotta + dark denim + espresso is warm, grounded, quietly authoritative. The structured jacket shifts it from boho to "I run things."</div>
+      </div>
+
+      <div class="outfit-card occasion-dancing">
+        <div class="outfit-occasion">Salsa / Dance Night</div>
+        <div class="outfit-name">The Burgundy Spin</div>
+        <div class="outfit-pieces">
+          <div class="outfit-piece"><span class="piece-label">Dress</span><span class="piece-dot"></span>Isabel Burgundy/Ivory Floral Maxi</div>
+          <div class="outfit-piece"><span class="piece-label">Shoes</span><span class="piece-dot"></span>Salsa-street hybrid dance shoes</div>
+          <div class="outfit-piece"><span class="piece-label">Jewelry</span><span class="piece-dot"></span>Gold earrings, keep it minimal</div>
+        </div>
+        <div class="outfit-availability"><span class="avail-chip avail-ready">Dress: owned</span><span class="avail-chip avail-needed">Dance shoes: needed</span></div>
+        <div class="outfit-stylist-note">The hi-low hem on the Isabel maxi was made for dancing — it moves. Burgundy is bold and romantic. This is your "I showed up" dance night look.</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const allCards = document.querySelectorAll('.item-card');
+  let activeCat = 'all';
+  let activeStatus = null;
+
+  function applyFilters() {
+    allCards.forEach(card => {
+      const catMatch = activeCat === 'all' || card.dataset.cat === activeCat;
+      const statusMatch = !activeStatus || card.dataset.status === activeStatus;
+      card.classList.toggle('hidden', !(catMatch && statusMatch));
+    });
+    document.querySelectorAll('.section-header').forEach(header => {
+      const nextGrid = header.nextElementSibling?.nextElementSibling;
+      if (nextGrid) {
+        const visible = [...nextGrid.querySelectorAll('.item-card')].some(c => !c.classList.contains('hidden'));
+        header.style.display = visible ? '' : 'none';
+        header.nextElementSibling.style.display = visible ? '' : 'none';
+      }
+    });
+  }
+
+  document.querySelectorAll('.cat-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = btn.dataset.cat;
+      applyFilters();
+    });
+  });
+
+  document.querySelectorAll('.status-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wasActive = btn.classList.contains('active');
+      document.querySelectorAll('.status-filter').forEach(b => b.classList.remove('active','active-owned','active-ordered','active-wanted'));
+      if (!wasActive) {
+        btn.classList.add('active', `active-${btn.dataset.status}`);
+        activeStatus = btn.dataset.status;
+      } else {
+        activeStatus = null;
+      }
+      applyFilters();
+    });
+  });
+</script>
+</body>
+</html>
